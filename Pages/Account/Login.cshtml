@@ -1,0 +1,37 @@
+@page
+@model LibraryManagement.Pages.Account.LoginModel
+@{ ViewData["Title"] = "Sign in"; }
+
+<section class="auth">
+    <div class="auth-card">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Sign in</h1>
+
+        <form method="post" novalidate>
+            <input type="hidden" asp-for="ReturnUrl" />
+            <fieldset class="segmented">
+                <legend class="sr-only">Account type</legend>
+                <label><input type="radio" id="role-student" name="Role" value="@Roles.Student" checked="@(Model.Role != Roles.Admin)" /><span>Student</span></label>
+                <label><input type="radio" id="role-admin" name="Role" value="@Roles.Admin" checked="@(Model.Role == Roles.Admin)" /><span>Admin</span></label>
+            </fieldset>
+
+            @if (Model.Error is not null)
+            {
+                <div class="flash flash-error" role="alert">@Model.Error</div>
+            }
+
+            <label class="field">
+                <span>Email</span>
+                <input asp-for="Email" type="email" autocomplete="email" autofocus />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Password</span>
+                <input asp-for="Password" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-error"></span>
+            </label>
+            <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+        </form>
+        <p class="muted center">New here? <a href="/Account/Register">Create a student account</a></p>
+    </div>
+</section>

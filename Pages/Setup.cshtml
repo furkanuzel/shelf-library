@@ -1,0 +1,28 @@
+@page
+@model SetupModel
+@{ ViewData["Title"] = "Set up"; }
+
+<section class="auth">
+    <div class="auth-card">
+        <p class="eyebrow">First run</p>
+        <h1>Set up your library</h1>
+        <p class="muted">Create the first admin account. You can add more admins later.</p>
+        <form method="post" novalidate>
+            <label class="field">
+                <span>Admin email</span>
+                <input asp-for="Email" type="email" autocomplete="email" autofocus />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Password <small>(min 8 characters)</small></span>
+                <input asp-for="Password" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-error"></span>
+            </label>
+            <label class="check">
+                <input asp-for="SampleBooks" type="checkbox" />
+                <span>Add a few sample books to explore</span>
+            </label>
+            <button class="btn btn-primary btn-block" type="submit">Create library</button>
+        </form>
+    </div>
+</section>

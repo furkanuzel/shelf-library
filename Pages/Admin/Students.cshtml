@@ -1,0 +1,47 @@
+@page
+@model LibraryManagement.Pages.Admin.StudentsModel
+@{ ViewData["Title"] = "Students"; }
+
+<section class="page-head">
+    <div>
+        <p class="eyebrow">Admin</p>
+        <h1>Students</h1>
+        <p class="lede">@Model.Students.Count registered</p>
+    </div>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Name</th><th>Email</th><th>Address</th><th class="num">Age</th><th class="num">Loans</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model.Students)
+            {
+                <tr>
+                    <td>
+                        <div class="cell-title">
+                            <span class="avatar" aria-hidden="true">@Display.Initials(s.Name)</span>
+                            <strong>@s.Name</strong>
+                        </div>
+                    </td>
+                    <td>@s.Email</td>
+                    <td>@s.Address</td>
+                    <td class="num">@s.Age</td>
+                    <td class="num">@s.ActiveLoans / @LibraryService.MaxLoansPerStudent</td>
+                    <td class="actions">
+                        <a class="btn btn-ghost btn-sm" href="/Admin/StudentEdit?id=@s.Id">Edit</a>
+                        <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Remove this student?')">
+                            <input type="hidden" name="id" value="@s.Id" />
+                            <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Students.Count == 0)
+            {
+                <tr><td colspan="6" class="muted center">No students yet. They can sign up from the Join button.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

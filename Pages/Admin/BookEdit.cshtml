@@ -1,0 +1,51 @@
+@page
+@model LibraryManagement.Pages.Admin.BookEditModel
+@{ ViewData["Title"] = Model.Id is null ? "Add book" : "Edit book"; }
+
+<section class="page-head">
+    <div>
+        <a class="back" href="/Admin/Books">← Books</a>
+        <h1>@(Model.Id is null ? "Add a book" : "Edit book")</h1>
+    </div>
+</section>
+
+<div class="form-card">
+    @if (Model.Error is not null)
+    {
+        <div class="flash flash-error" role="alert">@Model.Error</div>
+    }
+    <form method="post" novalidate>
+        <input type="hidden" asp-for="Id" />
+        <label class="field">
+            <span>Title</span>
+            <input asp-for="Title" autofocus />
+            <span asp-validation-for="Title" class="field-error"></span>
+        </label>
+        <label class="field">
+            <span>Author</span>
+            <input asp-for="Author" />
+            <span asp-validation-for="Author" class="field-error"></span>
+        </label>
+        <div class="field-row">
+            <label class="field"><span>ISBN</span><input asp-for="Isbn" inputmode="numeric" /></label>
+            <label class="field"><span>Language</span><input asp-for="Language" /></label>
+            <label class="field"><span>Subject</span><input asp-for="Subject" /></label>
+        </div>
+        <div class="field-row">
+            <label class="field">
+                <span>Pages</span>
+                <input asp-for="Pages" type="number" min="0" />
+                <span asp-validation-for="Pages" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Total copies @if (Model.OnLoan > 0) { <small>(@Model.OnLoan on loan)</small> }</span>
+                <input asp-for="TotalCopies" type="number" min="@Model.OnLoan" />
+                <span asp-validation-for="TotalCopies" class="field-error"></span>
+            </label>
+        </div>
+        <div class="form-actions">
+            <a class="btn btn-ghost" href="/Admin/Books">Cancel</a>
+            <button class="btn btn-primary" type="submit">@(Model.Id is null ? "Add book" : "Save changes")</button>
+        </div>
+    </form>
+</div>

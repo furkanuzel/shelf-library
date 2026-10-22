@@ -1,0 +1,39 @@
+@page
+@model MyLoansModel
+@{ ViewData["Title"] = "My loans"; }
+
+<section class="page-head">
+    <div>
+        <p class="eyebrow">My loans</p>
+        <h1>Your shelf</h1>
+        <p class="lede">@Model.Loans.Count of @LibraryService.MaxLoansPerStudent loan slots in use.</p>
+    </div>
+    <div class="meter" style="--v:@(Model.Loans.Count * 100 / LibraryService.MaxLoansPerStudent)%" aria-hidden="true"><span></span></div>
+</section>
+
+@if (Model.Loans.Count == 0)
+{
+    <div class="empty">
+        <p>You don't have any books right now.</p>
+        <a class="btn btn-primary" href="/">Browse the catalogue</a>
+    </div>
+}
+else
+{
+    <ul class="loan-list">
+        @foreach (var loan in Model.Loans)
+        {
+            <li class="loan">
+                <span class="spine" style="--h:@Display.Hue(loan.Title)" aria-hidden="true"></span>
+                <div class="loan-text">
+                    <strong>@loan.Title</strong>
+                    <small>Borrowed @Display.Ago(loan.LoanedAt) · @loan.LoanedAt.ToString("d MMM yyyy")</small>
+                </div>
+                <form method="post" asp-page-handler="Return">
+                    <input type="hidden" name="loanId" value="@loan.LoanId" />
+                    <button class="btn btn-ghost btn-sm" type="submit">Return</button>
+                </form>
+            </li>
+        }
+    </ul>
+}

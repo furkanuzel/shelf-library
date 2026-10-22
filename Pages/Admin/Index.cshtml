@@ -1,0 +1,82 @@
+@page
+@model LibraryManagement.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var s = Model.Stats;
+    var utilisation = s.Copies == 0 ? 0 : s.OnLoan * 100 / s.Copies;
+}
+
+<section class="page-head">
+    <div>
+        <p class="eyebrow">Admin</p>
+        <h1>Dashboard</h1>
+    </div>
+    <a class="btn btn-primary" href="/Admin/BookEdit">+ Add book</a>
+</section>
+
+<div class="stats">
+    <div class="stat"><span>Titles</span><strong>@s.Titles</strong></div>
+    <div class="stat"><span>Copies</span><strong>@s.Copies</strong></div>
+    <div class="stat"><span>On loan</span><strong>@s.OnLoan</strong><small>@utilisation% of copies</small></div>
+    <div class="stat"><span>Students</span><strong>@s.Students</strong></div>
+</div>
+
+<div class="panels">
+    <section class="panel">
+        <header><h2>Recent loans</h2><a href="/Admin/Loans">All loans →</a></header>
+        @if (Model.RecentLoans.Count == 0)
+        {
+            <p class="muted">No books are on loan.</p>
+        }
+        else
+        {
+            <ul class="rows">
+                @foreach (var l in Model.RecentLoans)
+                {
+                    <li>
+                        <span class="spine" style="--h:@Display.Hue(l.Title)" aria-hidden="true"></span>
+                        <div><strong>@l.Title</strong><small>@l.StudentName · @Display.Ago(l.LoanedAt)</small></div>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="panel">
+        <header><h2>Fully borrowed</h2><a href="/Admin/Books">Manage books →</a></header>
+        @if (Model.LowStock.Count == 0)
+        {
+            <p class="muted">Every title has at least one copy available.</p>
+        }
+        else
+        {
+            <ul class="rows">
+                @foreach (var b in Model.LowStock)
+                {
+                    <li>
+                        <span class="spine" style="--h:@Display.Hue(b.Title)" aria-hidden="true"></span>
+                        <div><strong>@b.Title</strong><small>@b.TotalCopies of @b.TotalCopies on loan</small></div>
+                        <a class="btn btn-ghost btn-sm" href="/Admin/BookEdit?id=@b.Id">Add copies</a>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="panel">
+        <header><h2>Add an admin</h2></header>
+        <form method="post" asp-page-handler="AddAdmin" class="stack" novalidate>
+            <label class="field">
+                <span>Email</span>
+                <input asp-for="NewAdminEmail" type="email" autocomplete="off" />
+                <span asp-validation-for="NewAdminEmail" class="field-error"></span>
+            </label>
+            <label class="field">
+                <span>Password <small>(min 8)</small></span>
+                <input asp-for="NewAdminPassword" autocomplete="new-password" />
+                <span asp-validation-for="NewAdminPassword" class="field-error"></span>
+            </label>
+            <button class="btn btn-ghost" type="submit">Add admin</button>
+        </form>
+    </section>
+</div>

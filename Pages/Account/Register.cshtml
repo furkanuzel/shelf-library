@@ -1,0 +1,44 @@
+@page
+@model LibraryManagement.Pages.Account.RegisterModel
+@{ ViewData["Title"] = "Create account"; }
+
+<section class="auth">
+    <div class="auth-card">
+        <p class="eyebrow">Student account</p>
+        <h1>Join the library</h1>
+        @if (Model.Error is not null)
+        {
+            <div class="flash flash-error" role="alert">@Model.Error</div>
+        }
+        <form method="post" novalidate>
+            <label class="field">
+                <span>Full name</span>
+                <input asp-for="Name" autocomplete="name" autofocus />
+                <span asp-validation-for="Name" class="field-error"></span>
+            </label>
+            <div class="field-row">
+                <label class="field">
+                    <span>Email</span>
+                    <input asp-for="Email" type="email" autocomplete="email" />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </label>
+                <label class="field field-narrow">
+                    <span>Age</span>
+                    <input asp-for="Age" type="number" min="5" max="120" />
+                    <span asp-validation-for="Age" class="field-error"></span>
+                </label>
+            </div>
+            <label class="field">
+                <span>Address <small>(optional)</small></span>
+                <input asp-for="Address" autocomplete="street-address" />
+            </label>
+            <label class="field">
+                <span>Password <small>(min 8 characters)</small></span>
+                <input asp-for="Password" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="field-error"></span>
+            </label>
+            <button class="btn btn-primary btn-block" type="submit">Create account</button>
+        </form>
+        <p class="muted center">Already registered? <a href="/Account/Login">Sign in</a></p>
+    </div>
+</section>

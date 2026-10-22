@@ -1,0 +1,42 @@
+@page
+@model LibraryManagement.Pages.Admin.StudentEditModel
+@{ ViewData["Title"] = "Edit student"; }
+
+<section class="page-head">
+    <div>
+        <a class="back" href="/Admin/Students">← Students</a>
+        <h1>Edit student</h1>
+    </div>
+</section>
+
+<div class="form-card">
+    @if (Model.Error is not null)
+    {
+        <div class="flash flash-error" role="alert">@Model.Error</div>
+    }
+    <form method="post" novalidate>
+        <input type="hidden" asp-for="Id" />
+        <label class="field">
+            <span>Full name</span>
+            <input asp-for="Name" />
+            <span asp-validation-for="Name" class="field-error"></span>
+        </label>
+        <div class="field-row">
+            <label class="field">
+                <span>Email</span>
+                <input asp-for="Email" type="email" />
+                <span asp-validation-for="Email" class="field-error"></span>
+            </label>
+            <label class="field field-narrow">
+                <span>Age</span>
+                <input asp-for="Age" type="number" min="5" max="120" />
+                <span asp-validation-for="Age" class="field-error"></span>
+            </label>
+        </div>
+        <label class="field"><span>Address</span><input asp-for="Address" /></label>
+        <div class="form-actions">
+            <a class="btn btn-ghost" href="/Admin/Students">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save changes</button>
+        </div>
+    </form>
+</div>

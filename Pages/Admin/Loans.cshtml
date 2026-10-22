@@ -1,0 +1,42 @@
+@page
+@model LibraryManagement.Pages.Admin.LoansModel
+@{ ViewData["Title"] = "Loans"; }
+
+<section class="page-head">
+    <div>
+        <p class="eyebrow">Admin</p>
+        <h1>Active loans</h1>
+        <p class="lede">@Model.Loans.Count book@(Model.Loans.Count == 1 ? "" : "s") currently out</p>
+    </div>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead><tr><th>Book</th><th>Student</th><th>Borrowed</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var l in Model.Loans)
+            {
+                <tr>
+                    <td>
+                        <div class="cell-title">
+                            <span class="spine" style="--h:@Display.Hue(l.Title)" aria-hidden="true"></span>
+                            <strong>@l.Title</strong>
+                        </div>
+                    </td>
+                    <td><strong>@l.StudentName</strong><br /><small class="muted">@l.StudentEmail</small></td>
+                    <td>@l.LoanedAt.ToString("d MMM yyyy") <small class="muted">· @Display.Ago(l.LoanedAt)</small></td>
+                    <td class="actions">
+                        <form method="post" asp-page-handler="Return">
+                            <input type="hidden" name="loanId" value="@l.LoanId" />
+                            <button class="btn btn-ghost btn-sm" type="submit">Check in</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Loans.Count == 0)
+            {
+                <tr><td colspan="4" class="muted center">No books are on loan.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

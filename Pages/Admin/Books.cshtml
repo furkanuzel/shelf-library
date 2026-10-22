@@ -1,0 +1,52 @@
+@page
+@model LibraryManagement.Pages.Admin.BooksModel
+@{ ViewData["Title"] = "Books"; }
+
+<section class="page-head">
+    <div>
+        <p class="eyebrow">Admin</p>
+        <h1>Books</h1>
+    </div>
+    <div class="head-actions">
+        <form class="search search-sm" method="get" role="search">
+            <input type="search" name="q" value="@Model.Query" placeholder="Search books" aria-label="Search books" />
+        </form>
+        <a class="btn btn-primary" href="/Admin/BookEdit">+ Add book</a>
+    </div>
+</section>
+
+<div class="table-wrap">
+    <table>
+        <thead>
+            <tr><th>Title</th><th>Subject</th><th>ISBN</th><th class="num">Pages</th><th class="num">Available</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model.Books)
+            {
+                <tr>
+                    <td>
+                        <div class="cell-title">
+                            <span class="spine" style="--h:@Display.Hue(b.Title)" aria-hidden="true"></span>
+                            <div><strong>@b.Title</strong><small>@b.Author</small></div>
+                        </div>
+                    </td>
+                    <td>@b.Subject</td>
+                    <td class="mono">@b.Isbn</td>
+                    <td class="num">@b.Pages</td>
+                    <td class="num"><span class="stock @(b.Available > 0 ? "in" : "out")">@b.Available / @b.TotalCopies</span></td>
+                    <td class="actions">
+                        <a class="btn btn-ghost btn-sm" href="/Admin/BookEdit?id=@b.Id">Edit</a>
+                        <form method="post" asp-page-handler="Delete" onsubmit="return confirm('Remove “@b.Title.Replace("'", "")”?')">
+                            <input type="hidden" name="id" value="@b.Id" />
+                            <button class="btn btn-danger btn-sm" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (Model.Books.Count == 0)
+            {
+                <tr><td colspan="6" class="muted center">No books found.</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

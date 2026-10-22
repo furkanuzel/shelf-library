@@ -1,0 +1,99 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Catalogue";
+    var isStudent = User.IsInRole(Roles.Student);
+    var isAdmin = User.IsInRole(Roles.Admin);
+}
+
+<section class="hero">
+    <div>
+        <p class="eyebrow">Catalogue</p>
+        <h1>Find your next <em>book.</em></h1>
+        <p class="lede">
+            @Model.Books.Count title@(Model.Books.Count == 1 ? "" : "s")
+            @(string.IsNullOrWhiteSpace(Model.Query) ? "in the collection" : $"matching “{Model.Query}”").
+            @if (isStudent)
+            {
+                <span>You have <strong>@Model.MyLoanCount / @LibraryService.MaxLoansPerStudent</strong> books on loan.</span>
+            }
+        </p>
+    </div>
+    <form class="search" method="get" role="search">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" name="q" value="@Model.Query" placeholder="Search title, author, subject or ISBN" aria-label="Search books" />
+        <label class="toggle">
+            <input type="checkbox" name="AvailableOnly" value="true" @(Model.AvailableOnly ? "checked" : "") onchange="this.form.submit()" />
+            <span>Available only</span>
+        </label>
+        <button class="btn btn-primary" type="submit">Search</button>
+    </form>
+</section>
+
+@if (Model.Books.Count == 0)
+{
+    <div class="empty">
+        <p>No books found.</p>
+        @if (isAdmin)
+        {
+            <a class="btn btn-primary" href="/Admin/BookEdit">Add the first book</a>
+        }
+    </div>
+}
+else
+{
+    <ul class="book-grid">
+        @foreach (var b in Model.Books)
+        {
+            var mine = Model.MyBookIds.Contains(b.Id);
+            <li class="book-card">
+                <div class="cover" style="--h:@Display.Hue(b.Title)">
+                    <span class="cover-title">@b.Title</span>
+                    <span class="cover-author">@b.Author</span>
+                </div>
+                <div class="book-body">
+                    <div class="book-meta">
+                        @if (!string.IsNullOrEmpty(b.Subject)) { <span class="chip">@b.Subject</span> }
+                        @if (!string.IsNullOrEmpty(b.Language)) { <span class="chip chip-muted">@b.Language</span> }
+                    </div>
+                    <h2>@b.Title</h2>
+                    <p class="author">@b.Author</p>
+                    <dl class="facts">
+                        <div><dt>Pages</dt><dd>@b.Pages</dd></div>
+                        <div><dt>ISBN</dt><dd>@(string.IsNullOrEmpty(b.Isbn) ? "—" : b.Isbn)</dd></div>
+                    </dl>
+                    <div class="book-foot">
+                        <span class="stock @(b.Available > 0 ? "in" : "out")">
+                            @(b.Available > 0 ? $"{b.Available} of {b.TotalCopies} available" : "All copies on loan")
+                        </span>
+                        @if (isStudent)
+                        {
+                            if (mine)
+                            {
+                                <span class="badge">On your shelf</span>
+                            }
+                            else
+                            {
+                                <form method="post" asp-page-handler="Borrow">
+                                    <input type="hidden" name="bookId" value="@b.Id" />
+                                    <input type="hidden" name="q" value="@Model.Query" />
+                                    <input type="hidden" name="AvailableOnly" value="@Model.AvailableOnly.ToString().ToLowerInvariant()" />
+                                    <button class="btn btn-primary btn-sm" type="submit"
+                                            disabled="@(b.Available <= 0 || Model.MyLoanCount >= LibraryService.MaxLoansPerStudent)">Borrow</button>
+                                </form>
+                            }
+                        }
+                        else if (isAdmin)
+                        {
+                            <a class="btn btn-ghost btn-sm" href="/Admin/BookEdit?id=@b.Id">Edit</a>
+                        }
+                        else
+                        {
+                            <a class="btn btn-ghost btn-sm" href="/Account/Login?returnUrl=%2F">Sign in to borrow</a>
+                        }
+                    </div>
+                </div>
+            </li>
+        }
+    </ul>
+}
